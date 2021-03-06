@@ -3,18 +3,22 @@
 
 #define MAXLINES 100		/* numero de lineas de texto que puede recibir el programa */
 int readlines(char *lineptr[], int);
-void writelines(char *lineptr[], int);
+void writelines(char *lineptr[], int, int);
 
 int main(void)
 {
-	int nlines;						/* numero de lineas de texto que han sido leidas */
-	char *lineptr[MAXLINES]; 		/* apuntadores a las lineas de texto ingresadas */
-	if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
-		writelines(lineptr, nlines);
+	int nlines;					/* numero de lineas de texto que han sido leidas */
+	int n = 2;					/* valor que indica las ultimas n lineas que imprime el programa, por definicion n = 1 */
+	char *lineptr[MAXLINES]; 	/* apuntadores a las lineas de texto ingresadas */
+	if ((nlines = readlines(lineptr, MAXLINES)) >= 0 && nlines >= n) {
+		writelines(lineptr, nlines, n);
 		return 0;
 	}
-	else
+	else {
+		if (nlines != -1)
+			printf("ERROR: El total de lineas ingresadas (%d) es menor al numero de lineas que se desean imprimir (n = %d).", nlines, n);
 		return 1;
+	}
 }
 
 #define MAXLEN 400				/* longitud maxima de caracteres en una linea de texto de entrada */
@@ -43,18 +47,17 @@ int readlines(char *lineptr[], int maxlines)
 			storefp += len;
 		}
 	if (len == -1) {
-		printf("ERROR: La linea de texto ingresada excede la longitud permitida. No es posible leerla.");
+		printf("ERROR: La linea de texto ingresada es muy extensa. No es posible leerla.");
 		return -1;
 	}
 	return nlines;
 }
 
-/* writelines: imprime las lineas de texto en la pantalla del usuario */
-void writelines(char *lineptr[], int nlines)
+/* writelines: imprime las ultimas n lineas de texto en la pantalla del usuario. */
+void writelines(char *lineptr[], int nlines, int n)
 {
-	if (nlines == 0)
-		printf("No se ingresaron lineas de texto");
-	while (nlines-- > 0)
+	lineptr += nlines - n;	/* lineptr se posiciona n lineas atras respecto a la ultima linea */
+	while (n-- > 0)
 		printf("%s\n", *lineptr++);
 }
 
@@ -72,7 +75,7 @@ int getline(char s[], int lim)
 		s[i++] = c;
 		c = getchar();
 	}
-	if (i != 0)
+	if (i > 0)
 		s[i++] = '\0';
 	if (lim == 0 && c != EOF && c != '\n')
 		i = -1;
