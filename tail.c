@@ -7,7 +7,7 @@ void writelines(char *lineptr[], int, int, int);
 int getint(char *);
 
 /* El programa acepta un segundo argumento en la linea de comandos, el argumento debe ser un numero entero positivo */
-/* El primer digito del numero tiene que ser antecedido por un guion, como el siguiente ejemplo: -10				*/
+/* El primer digito del numero tiene que ser antecedido por un guion, como el siguiente ejemplo: -10  */
 int main(int argc, char *argv[])
 {
 	int nlines;					/* numero de lineas de texto que han sido leidas */
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 }
 
 #include <string.h>
-#define MAXLEN 150				/* longitud maxima de caracteres en una linea de texto de entrada */
+#define MAXLEN 150				/* longitud de una linea de texto ingresada, incluyendo el caracter nulo */
 #define MAXSPACE 15000			/* espacio del arreglo donde se localizan cada una de las lineas */
 int getline(char s[], int);
 
@@ -130,12 +130,14 @@ int getline(char s[], int lim)
 }
 
 #include <ctype.h>
-/* getint: Toma el numero entero positivo que se ingreso como un argumento en el comando de linea */
+/* getint: Toma el numero entero positivo que se ingreso como un argumento en la linea de comandos */
 int getint(char *s)
 {
 	int c, num;
 	while ((c = *s++) == ' ' || c == '\t')	/* Se omiten los espacios en blanco al inicio */
 		;
+	if (c == '\0')		/* Se ingreso un argumento vacio */
+		return num = -1;
 	for (num = 0; isdigit(c); c = *s++)
 		num = 10 * num + (c - '0');
 	if (c != '\0')
