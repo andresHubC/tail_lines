@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 		if ((*++argv)[0] == '-') {
 			n = getint(++argv[0]);
 			if (n == -1)
-				printf("ERROR: El argumento ingresado no es valido, revisa la forma de ingresarlo.\n");
+				printf("ERROR: El programa no puede convertir el argumento ingresado a un numero entero.\n");
 			else if (n == 0) {
 				printf("ERROR: El argumento ingresado no es un numero entero positivo.\n");
 				n = -1;
@@ -130,17 +130,45 @@ int getline(char s[], int lim)
 }
 
 #include <ctype.h>
+#include <limits.h>
+#define DIG 11    /* Maximo numero de digitos, incluyendo el caracter nulo, en la cadena numerica maxint */
+void itoa(int, char maxint[]);
+
 /* getint: Toma el numero entero positivo que se ingreso como un argumento en la linea de comandos */
 int getint(char *s)
 {
-	int c, num;
-	while ((c = *s++) == ' ' || c == '\t')	/* Se omiten los espacios en blanco al inicio */
-		;
-	if (c == '\0')		/* Se ingreso un argumento vacio */
-		return num = -1;
-	for (num = 0; isdigit(c); c = *s++)
-		num = 10 * num + (c - '0');
-	if (c != '\0')
+	int num, i, len;
+	char maxint[DIG];	
+	
+	while (*s == ' ' || *s == '\t')	/* Se omiten los espacios en blanco al inicio */
+		s++;
+	if (*s == '+')	 /* Se omite el signo positivo al inicio del numero. */
+		s++;
+	itoa(INT_MAX, maxint);     /* El maximo valor de un int es convertido a cadena de caracteres */
+	len = strlen(s);    
+	
+	/* El programa verifica que s sea un numero y no sobrepase el valor limite */
+	if (len == 0 || len > strlen(maxint))	
+		return -1;
+	if (len == strlen(maxint))		
+		for (i = 0; i < len; i++)
+			if (!isdigit(s[i]) || s[i] > maxint[i])
+				return -1;
+	for (num = 0; isdigit(*s); s++)
+		num = 10 * num + (*s - '0');
+	if (*s != '\0')
 		num = -1;	/* Se indica que no es un numero */
 	return num;
+}
+
+/* itoa: Convierte el valor maximo que tiene un dato int en cadena de caracteres */
+void itoa(int n, char maxint[])
+{
+	static int i;
+	
+	i = 0;
+	if (n / 10)
+		itoa(n / 10, maxint);
+	maxint[i++] = n % 10 + '0';
+	maxint[i] = '\0';
 }
